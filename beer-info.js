@@ -27,10 +27,20 @@ function render(data) {
     const beer = data[0];
     console.log(beer);
     const name = beer.name;
-    const hopsString = getHopsName(beer.ingredients.hops);
+    const hopsString = getIngredientsName(beer.ingredients.hops);
+    const maltString = getIngredientsName(beer.ingredients.malt);
 
-    let keysArray = ["Description: ", "Hops: ", "Alcohol by volume: ", "Volume: ", "Ingredients: ", "Brewers tips: ", "Food pairing: "];
-    let valuesArray = [beer.description, hopsString, beer.abv, beer.volume, beer.ingredients, beer.brewers_tips, beer.food_pairing];
+    const ingredientsList = [`Yeast: ${beer.ingredients.yeast}`, `Malt: ${maltString}`, `Hops: ${hopsString}`];
+    const ulTagIngredients = document.createElement('ul');
+
+    ingredientsList.forEach((item, index) => {
+        let newLi = document.createElement('li');
+        newLi.textContent = item;
+        ulTagIngredients.appendChild(newLi);
+        });
+        
+    let keysArray = ["Description: ", "Alcohol by volume: ", "Volume: ", "Brewers tips: ", "Food pairing: ", "Ingredients: "];
+    let valuesArray = [beer.description, beer.abv, beer.volume, beer.brewers_tips, beer.food_pairing, ""];
     
     infoHeader.textContent = name;
 
@@ -39,19 +49,20 @@ function render(data) {
     newLi.textContent = keysArray[index] + item;
     infoList.appendChild(newLi);
     });
+
+    infoList.lastChild.appendChild(ulTagIngredients);
 }
 
-function getHopsName(hops) {
+function getIngredientsName(ingredients) {
 
-    let hopsName = "";
+    let stringOfNames = "";
 
-    hops.forEach((item) => {
-        hopsName += item.name + ", ";
+    ingredients.forEach((item) => {
+        stringOfNames += item.name + ", ";
     });
-    console.log(hops);
-    console.log(hopsName);
 
-    return hopsName;
+    return stringOfNames;
 }
 
-// function getABV()
+
+    
