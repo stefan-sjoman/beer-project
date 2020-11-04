@@ -1,6 +1,11 @@
 
 const searchUrl = 'https://api.punkapi.com/v2/beers';
 const formElement = document.querySelector('form');
+const forwardButton = document.createElement('button');
+const backButton = document.createElement('button');
+const navElement = document.querySelector('nav');
+let pageNumber=1;
+
 
 formElement.addEventListener('submit', search);
 
@@ -36,7 +41,7 @@ function render(data) {
         liTag.setAttribute('name', item.id);
         ulTag.appendChild(liTag);
     });
-
+    createNavButtons();
     console.log(data);
 }
 
@@ -44,4 +49,27 @@ function openBeerInfo(evt) {
     const beerId = evt.target.getAttribute('name');
     const url = `beer-info.html?name=${beerId}`;
     document.location.href = url;
+}
+
+
+
+function goForward(){
+    pageNumber++;
+    alert(pageNumber)
+
+
+}
+
+function goBack(){
+    pageNumber--;
+}
+
+function createNavButtons(){
+    forwardButton.textContent='►';
+    forwardButton.addEventListener('click', goForward);
+    backButton.textContent='◄';
+    backButton.addEventListener('click', goBack);
+    
+    navElement.appendChild(backButton);
+    navElement.appendChild(forwardButton);
 }
