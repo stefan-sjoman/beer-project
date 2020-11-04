@@ -29,6 +29,7 @@ function render(data) {
     const name = beer.name;
     const hopsString = getIngredientsName(beer.ingredients.hops);
     const maltString = getIngredientsName(beer.ingredients.malt);
+    const volumeString = printVolume(beer.volume);
 
     const ingredientsList = [`Yeast: ${beer.ingredients.yeast}`, `Malt: ${maltString}`, `Hops: ${hopsString}`];
     const ulTagIngredients = document.createElement('ul');
@@ -40,7 +41,7 @@ function render(data) {
         });
         
     let keysArray = ["Description: ", "Alcohol by volume: ", "Volume: ", "Brewers tips: ", "Food pairing: ", "Ingredients: "];
-    let valuesArray = [beer.description, beer.abv, beer.volume, beer.brewers_tips, beer.food_pairing, ""];
+    let valuesArray = [beer.description, beer.abv, volumeString, beer.brewers_tips, beer.food_pairing, ""];
     
     infoHeader.textContent = name;
 
@@ -64,5 +65,8 @@ function getIngredientsName(ingredients) {
     return stringOfNames;
 }
 
-
+function printVolume(volume) {
+    let volumeText = `${volume.value} ${volume.unit}`;
+    return volumeText;
+}
     
