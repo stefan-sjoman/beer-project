@@ -52,6 +52,8 @@ function render(data) {
     });
 
     infoList.lastChild.appendChild(ulTagIngredients);
+
+    image.src = beer.image_url;
 }
 
 function getIngredientsName(ingredients) {
