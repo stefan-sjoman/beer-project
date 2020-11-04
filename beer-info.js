@@ -22,27 +22,36 @@ function getData(url, callback) {
         .catch(error => console.log(error));
 }
 
-
-
 function render(data) {
-    const beer = data[0];
-    let keysArray = ["Description: ", "Hops: ", "Alcohol per volume: ", "Volume: ", "Ingredients: ", "Brewers tips: ", "Food pairing: "]
-    let hops = beer.ingredients.hops.name//här var vi
-    let valuesArray = [beer.description, beer.ingredients.hops, beer.abv, beer.volume, beer.ingredients, beer.brewers_tips, beer.food_pairing];
-    valuesArray.forEach((item, index) => {console.log(item)
-        let newLi = document.createElement('li');
-        newLi.textContent = keysArray[index] + item;
-        infoList.appendChild(newLi);
-    })
 
+    const beer = data[0];
+    console.log(beer);
     const name = beer.name;
+    const hopsString = getHopsName(beer.ingredients.hops);
+
+    let keysArray = ["Description: ", "Hops: ", "Alcohol by volume: ", "Volume: ", "Ingredients: ", "Brewers tips: ", "Food pairing: "];
+    let valuesArray = [beer.description, hopsString, beer.abv, beer.volume, beer.ingredients, beer.brewers_tips, beer.food_pairing];
+    
     infoHeader.textContent = name;
 
-
-    
+    valuesArray.forEach((item, index) => {
+    let newLi = document.createElement('li');
+    newLi.textContent = keysArray[index] + item;
+    infoList.appendChild(newLi);
+    });
 }
 
+function getHopsName(hops) {
 
-// Image
-// Hops
-// Food pairing
+    let hopsName = "";
+
+    hops.forEach((item) => {
+        hopsName += item.name + ", ";
+    });
+    console.log(hops);
+    console.log(hopsName);
+
+    return hopsName;
+}
+
+// function getABV()
