@@ -26,8 +26,6 @@ function getData(url, callback) {
     .catch(error => console.log(error));
 }
 
-
-
 function createBeerCard(data) {
     
     let randomBeer = data[0];
@@ -36,6 +34,7 @@ function createBeerCard(data) {
     randomBeerId = randomBeer.id;
 
     randomImage.src = randomBeer.image_url;
+    randomImage.alt = "Bild på en öl.";
     randomHeaderElement.innerText = randomBeer.name;
 }
 

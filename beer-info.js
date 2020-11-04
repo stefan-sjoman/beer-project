@@ -54,6 +54,7 @@ function render(data) {
     infoList.lastChild.appendChild(ulTagIngredients);
 
     image.src = beer.image_url;
+    image.alt = "Bild på en öl.";
 }
 
 function getIngredientsName(ingredients) {
