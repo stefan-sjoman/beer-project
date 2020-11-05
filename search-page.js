@@ -9,23 +9,49 @@ let searchStr = "";
 let pageNumber = 1;
 let pageExists;
 
-
 formElement.addEventListener('submit', search);
 
-function getData(url, callback) {
+function search(evt) {
+
+    searchStr = evt.target[0].value;
+
+    changePage();
+
+    evt.preventDefault();
+}
+
+function changePage(){
     
+    const url = `${searchUrl}?beer_name=${searchStr}&page=${pageNumber}&per_page=10`;
+    getData(url, checkData);   
+}
+
+function checkData(data) {
+
+    if (data.length === 0) {
+        pageExists = false;
+    }
+    else {
+        pageExists = true;
+    }
+}
+
+function getData(url, callback) {
     fetch(url)
     .then(res => res.json())
     .then(data => {
 
         console.log(data);
-        if (data.length === 0) {
-            pageExists = false;
-            return;
-        }
-        pageExists = true;
+       
         callback(data);
 
+        if (pageExists === true) {
+            render(data);
+        }
+        else {
+            alert("Finns ingen data");
+            pageNumber--; // To cancel-out counting in goForward();
+        }
     })
     .catch(error => console.log(error));
 }
@@ -37,7 +63,7 @@ function render(data) {
     ulTag.innerText = "";
     ulTag.addEventListener('click', openBeerInfo);
     
-    data.forEach((item, index) => {
+    data.forEach((item) => {
         const liTag = document.createElement('li');
         liTag.textContent = item.name;
         liTag.setAttribute('name', item.id);
@@ -47,46 +73,15 @@ function render(data) {
     console.log(data);
 }
 
-function search(evt) {
-
-    searchStr = evt.target[0].value;
-
-   // const url = `${searchUrl}?beer_name=${searchStr}&page=1&per_page=10`;
-    const url = `${searchUrl}?beer_name=${searchStr}&page=${pageNumber}&per_page=10`;
-
-    getData(url, render);    
-    evt.preventDefault();
-}
-
-function changePage(){
-
-    const url = `${searchUrl}?beer_name=${searchStr}&page=${pageNumber}&per_page=10`;
-    getData(url, render); 
-}
-
 function openBeerInfo(evt) {
+
     const beerId = evt.target.getAttribute('name');
     const url = `beer-info.html?name=${beerId}`;
     document.location.href = url;
 }
 
-function goForward(){
-    
-    if (pageExists === true) {
-        pageNumber++;
-        changePage();
-    }
-}
+function createNavButtons() {
 
-function goBack(){
-
-    if (pageNumber > 1 ) {
-        pageNumber--;
-        changePage();
-    }
-}
-
-function createNavButtons(){
     forwardButton.textContent='►';
     forwardButton.addEventListener('click', goForward);
     backButton.textContent='◄';
@@ -98,3 +93,18 @@ function createNavButtons(){
     navElement.appendChild(pageDisplay);
     navElement.appendChild(forwardButton);
 }
+
+function goForward(){
+    
+    pageNumber++;
+    changePage();
+}
+
+function goBack(){
+
+    if (pageNumber > 1 ) {
+        pageNumber--;
+        changePage();
+    }
+}
+
