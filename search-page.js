@@ -67,7 +67,7 @@ function changePage(){
     }
     let abvLess = "";
     if (searchStrAbvLess !== "") {
-        abvLess = `&abv_=lt${searchStrAbvLess}`;
+        abvLess = `&abv_lt=${searchStrAbvLess}`;
     }
 
     const url = `${searchUrl}?&page=${pageNumber}&per_page=10${beerNameSearch}${hopsSearch}${maltSearch}${brewedBefore}${brewedAfter}${abvGreater}${abvLess}`;
