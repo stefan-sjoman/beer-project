@@ -5,19 +5,34 @@ const forwardButton = document.createElement('button');
 const backButton = document.createElement('button');
 const pageDisplay = document.createElement('span');
 const navElement = document.querySelector('nav');
-let searchStr = "";
 let pageNumber = 1;
 let pageExists;
 let cachePages = [];
 
+let searchStr = "";
+let searchStrHops ="";
+let searchStrMalt ="";
+let searchStrBrewedBefore ="";
+let searchStrAbvLess ="";
+let searchStrAbvGreater ="";
+
 formElement.addEventListener('submit', search);
+
+function validate(){}
 
 function search(evt) {
 
     cachePages = [];
 
     searchStr = evt.target[0].value;
+    searchStrHops = evt.target[1].value;
+    searchStrMalt = evt.target[2].value;
+    searchStrBrewedBefore = evt.target[3].value;
+    searchStrAbvLess = evt.target[4].value;
+    searchStrAbvGreater = evt.target[5].value;
 
+
+    // Här tror jag att det blir if validate()=true changePage() men har ej tänkt klart
     changePage();
 
     evt.preventDefault();
