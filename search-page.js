@@ -13,14 +13,15 @@ let searchStr = "";
 let searchStrHops ="";
 let searchStrMalt ="";
 let searchStrBrewedBefore ="";
-let searchStrAbvLess ="";
+let searchStrBrewedAfter = "";
 let searchStrAbvGreater ="";
+let searchStrAbvLess ="";
 
 formElement.addEventListener('submit', search);
 
-function validate(){}
-
 function search(evt) {
+
+    pageNumber = 1;
 
     cachePages = [];
 
@@ -28,9 +29,9 @@ function search(evt) {
     searchStrHops = evt.target[1].value;
     searchStrMalt = evt.target[2].value;
     searchStrBrewedBefore = evt.target[3].value;
-    searchStrAbvLess = evt.target[4].value;
+    searchStrBrewedAfter = evt.target[4].value
     searchStrAbvGreater = evt.target[5].value;
-
+    searchStrAbvLess = evt.target[6].value;
 
     // Här tror jag att det blir if validate()=true changePage() men har ej tänkt klart
     changePage();
@@ -39,8 +40,38 @@ function search(evt) {
 }
 
 function changePage(){
-    
-    const url = `${searchUrl}?beer_name=${searchStr}&page=${pageNumber}&per_page=10`;
+
+    let beerNameSearch = "";
+    if (searchStr !== "") {
+        beerNameSearch = `&beer_name=${searchStr}`;
+    }
+    let hopsSearch = "";
+    if (searchStrHops !== "") {
+        hopsSearch = `&hops=${searchStrHops}`;
+    }
+    let maltSearch = "";
+    if (searchStrMalt !== "") {
+        maltSearch = `&malt=${searchStrMalt}`;
+    }
+    let brewedBefore = "";
+    if (searchStrBrewedBefore !== "") {
+        brewedBefore = `&brewed_before=${searchStrBrewedBefore}`;
+    }
+    let brewedAfter = "";
+    if (searchStrBrewedAfter !== "") {
+        brewedAfter = `&brewed_after=${searchStrBrewedAfter}`;
+    }
+    let abvGreater = "";
+    if (searchStrAbvGreater !== "") {
+        abvGreater = `&abv_gt=${searchStrAbvGreater}`;
+    }
+    let abvLess = "";
+    if (searchStrAbvLess !== "") {
+        abvLess = `&abv_=lt${searchStrAbvLess}`;
+    }
+
+    const url = `${searchUrl}?&page=${pageNumber}&per_page=10${beerNameSearch}${hopsSearch}${maltSearch}${brewedBefore}${brewedAfter}${abvGreater}${abvLess}`;
+    console.log(url);
     getData(url, checkData);   
 }
 
