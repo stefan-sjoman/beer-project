@@ -8,10 +8,13 @@ const navElement = document.querySelector('nav');
 let searchStr = "";
 let pageNumber = 1;
 let pageExists;
+let cachePages = [];
 
 formElement.addEventListener('submit', search);
 
 function search(evt) {
+
+    cachePages = [];
 
     searchStr = evt.target[0].value;
 
@@ -70,7 +73,7 @@ function render(data) {
         ulTag.appendChild(liTag);
     });
     createNavButtons();
-    console.log(data);
+    cachePages.push(data);
 }
 
 function openBeerInfo(evt) {
@@ -95,7 +98,7 @@ function createNavButtons() {
 }
 
 function goForward(){
-    
+
     pageNumber++;
     changePage();
 }
@@ -104,7 +107,6 @@ function goBack(){
 
     if (pageNumber > 1 ) {
         pageNumber--;
-        changePage();
+        render(cachePages[pageNumber - 1]);
     }
 }
-
