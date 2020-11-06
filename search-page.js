@@ -1,4 +1,3 @@
-
 const searchUrl = 'https://api.punkapi.com/v2/beers';
 const formElement = document.querySelector('form');
 const forwardButton = document.createElement('button');
@@ -10,35 +9,37 @@ let pageExists;
 let cachePages = [];
 
 let searchStr = "";
-let searchStrHops ="";
-let searchStrMalt ="";
-let searchStrBrewedBefore ="";
+let searchStrHops = "";
+let searchStrMalt = "";
+let searchStrBrewedBefore = "";
 let searchStrBrewedAfter = "";
-let searchStrAbvGreater ="";
-let searchStrAbvLess ="";
+let searchStrAbvGreater = "";
+let searchStrAbvLess = "";
 
 
 function validate() {
 
     if (
+        compareDates(searchStrBrewedAfter, searchStrBrewedBefore) &&
         checkIfNumber(searchStrAbvLess) &&
         checkIfNumber(searchStrAbvGreater) &&
-        checkIfNumber(searchStrBrewedBefore) &&
-        checkIfNumber(searchStrBrewedAfter) &&
-        compare(searchStrAbvGreater, searchStrAbvLess) &&
-        compare(searchStrBrewedBefore, searchStrBrewedAfter)
+        
+        compareAbv(searchStrAbvGreater, searchStrAbvLess)
+
     ) {
-        alert("jippie")
+        console.log("jippie")
+        return true;
     } else {
-        alert("nääjj")
+        console.log("nääjj");
+        return false;
     }
 }
 
 function checkIfNumber(value) {
-    if (value.length == 0) {
+    if (value.length === 0) {
         return true
-    } else if (isNaN(value) || value < 1) {
-        alert("Skriv in en siffra");
+    } else if (isNaN(value) || value < 0) {
+        alert("Skriv in ett positivt tal för bryggnings-datum och alkohol");
         return false
     } else {
         return true;
@@ -46,8 +47,11 @@ function checkIfNumber(value) {
 }
 
 
-function compare(value1, value2) {
-    if (value1.length == 0 || value2.length == 0) {
+function compareAbv(value1, value2) {
+    if (value1 > 100 || value2 > 100) {
+        alert("Alkoholprocenten kan inte vara över 100")
+        return false
+    } else if (value1.length === 0 || value2.length === 0) {
         return true
     } else if (value1 <= value2) {
         return true
@@ -55,6 +59,39 @@ function compare(value1, value2) {
         alert("Du har skrivit in värdena i fel ordning"); //Det här behöver fixas så att jag kan hämta label eller nåt och säga vilket fält som ska vara lägre
         return false
     };
+}
+
+function compareDates(value1, value2) {
+    if (value1.length === 0 || value2.length === 0) {
+        return true
+    } else if (!value1.includes("-") || !value2.includes("-")) {
+        alert("ingebindestreck")
+        return false
+    } else {
+        let dateArray = (value1.split('-'))
+        let month1 = dateArray[0];
+        console.log(month1)
+        let year1 = dateArray[1];
+        dateArray = (value2.split('-'))
+        let month2 = dateArray[0];
+        let year2 = dateArray[1];
+        console.log(year2)
+
+        if (month1 > 12 || month2 > 12) {//kolla även om mån och år är nr
+            alert("fel i månad");
+            return false
+        } else if (year1 < 1000 || year1 > 9999 || year2 < 1000 || year2 > 9999) {
+            alert("fel i år");
+            return false
+        } else if (year1 > year2) {
+            alert("fel ordning på år");
+            return false
+        } else if (year1 === year2) {
+            if (month1 > month2) alert("fel ordning på månad")
+        }
+    }
+    return true
+
 }
 
 formElement.addEventListener('submit', search);
@@ -73,14 +110,14 @@ function search(evt) {
     searchStrAbvGreater = evt.target[5].value;
     searchStrAbvLess = evt.target[6].value;
 
-    validate()
-    // Här tror jag att det blir if validate()=true changePage() men har ej tänkt klart
-    changePage();
+    if (validate()) {
+        changePage();
+    }
 
     evt.preventDefault();
 }
 
-function changePage(){
+function changePage() {
 
     let beerNameSearch = "";
     if (searchStr !== "") {
@@ -113,46 +150,44 @@ function changePage(){
 
     const url = `${searchUrl}?&page=${pageNumber}&per_page=10${beerNameSearch}${hopsSearch}${maltSearch}${brewedBefore}${brewedAfter}${abvGreater}${abvLess}`;
     console.log(url);
-    getData(url, checkData);   
+    getData(url, checkData);
 }
 
 function checkData(data) {
 
     if (data.length === 0) {
         pageExists = false;
-    }
-    else {
+    } else {
         pageExists = true;
     }
 }
 
 function getData(url, callback) {
     fetch(url)
-    .then(res => res.json())
-    .then(data => {
+        .then(res => res.json())
+        .then(data => {
 
-        console.log(data);
-       
-        callback(data);
+            console.log(data);
 
-        if (pageExists === true) {
-            render(data);
-        }
-        else {
-            alert("Finns ingen data");
-            pageNumber--; // To cancel-out counting in goForward();
-        }
-    })
-    .catch(error => console.log(error));
+            callback(data);
+
+            if (pageExists === true) {
+                render(data);
+            } else {
+                alert("Finns ingen data");
+                pageNumber--; // To cancel-out counting in goForward();
+            }
+        })
+        .catch(error => console.log(error));
 }
 
 function render(data) {
-    
+
     const ulTag = document.querySelector('ul');
 
     ulTag.innerText = "";
     ulTag.addEventListener('click', openBeerInfo);
-    
+
     data.forEach((item) => {
         const liTag = document.createElement('li');
         liTag.textContent = item.name;
@@ -172,27 +207,27 @@ function openBeerInfo(evt) {
 
 function createNavButtons() {
 
-    forwardButton.textContent='►';
+    forwardButton.textContent = '►';
     forwardButton.addEventListener('click', goForward);
-    backButton.textContent='◄';
+    backButton.textContent = '◄';
     backButton.addEventListener('click', goBack);
 
     pageDisplay.textContent = pageNumber;
-    
+
     navElement.appendChild(backButton);
     navElement.appendChild(pageDisplay);
     navElement.appendChild(forwardButton);
 }
 
-function goForward(){
+function goForward() {
 
     pageNumber++;
     changePage();
 }
 
-function goBack(){
+function goBack() {
 
-    if (pageNumber > 1 ) {
+    if (pageNumber > 1) {
         pageNumber--;
         render(cachePages[pageNumber - 1]);
     }
