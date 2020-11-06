@@ -17,6 +17,46 @@ let searchStrBrewedAfter = "";
 let searchStrAbvGreater ="";
 let searchStrAbvLess ="";
 
+
+function validate() {
+
+    if (
+        checkIfNumber(searchStrAbvLess) &&
+        checkIfNumber(searchStrAbvGreater) &&
+        checkIfNumber(searchStrBrewedBefore) &&
+        checkIfNumber(searchStrBrewedAfter) &&
+        compare(searchStrAbvGreater, searchStrAbvLess) &&
+        compare(searchStrBrewedBefore, searchStrBrewedAfter)
+    ) {
+        alert("jippie")
+    } else {
+        alert("nääjj")
+    }
+}
+
+function checkIfNumber(value) {
+    if (value.length == 0) {
+        return true
+    } else if (isNaN(value) || value < 1) {
+        alert("Skriv in en siffra");
+        return false
+    } else {
+        return true;
+    }
+}
+
+
+function compare(value1, value2) {
+    if (value1.length == 0 || value2.length == 0) {
+        return true
+    } else if (value1 <= value2) {
+        return true
+    } else {
+        alert("Du har skrivit in värdena i fel ordning"); //Det här behöver fixas så att jag kan hämta label eller nåt och säga vilket fält som ska vara lägre
+        return false
+    };
+}
+
 formElement.addEventListener('submit', search);
 
 function search(evt) {
@@ -33,6 +73,7 @@ function search(evt) {
     searchStrAbvGreater = evt.target[5].value;
     searchStrAbvLess = evt.target[6].value;
 
+    validate()
     // Här tror jag att det blir if validate()=true changePage() men har ej tänkt klart
     changePage();
 
