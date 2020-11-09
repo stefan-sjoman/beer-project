@@ -211,5 +211,5 @@ function goBack() {
 function openBeerInfo(evt) {
     const beerId = evt.target.getAttribute('name');
     const url = `beer-info.html?name=${beerId}`;
-    document.location.href = url;
+    window.open(url);
 }

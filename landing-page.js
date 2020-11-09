@@ -40,5 +40,5 @@ function createBeerCard(data) {
 
 function openBeerInfo() {
     const url = `beer-info.html?name=${randomBeerId}`;
-    document.location.href = url;
+    window.open(url);
 }
