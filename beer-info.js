@@ -25,7 +25,6 @@ function getData(url, callback) {
 function render(data) {
 
     const beer = data[0];
-    console.log(beer);
     const name = beer.name;
     const hopsString = getIngredientsName(beer.ingredients.hops);
     const maltString = getIngredientsName(beer.ingredients.malt);
@@ -40,8 +39,8 @@ function render(data) {
         ulTagIngredients.appendChild(newLi);
         });
         
-    let keysArray = ["Description: ", "Alcohol by volume: ", "Volume: ", "Brewers tips: ", "Food pairing: ", "Ingredients: "];
-    let valuesArray = [beer.description, beer.abv, volumeString, beer.brewers_tips, beer.food_pairing, ""];
+    let keysArray = ["Beskrivning: ", "Alkoholhalt: ", "Volym: ", "Bryggarens tips: ", "Passar till mat: ", "Första bryggdatum: ", "Ingredienser: "];
+    let valuesArray = [beer.description, beer.abv + "%", volumeString, beer.brewers_tips, beer.food_pairing, beer.first_brewed, ""];
     
     infoHeader.textContent = name;
 

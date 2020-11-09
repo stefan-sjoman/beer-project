@@ -4,15 +4,11 @@ const randomBeerUrl = "https://api.punkapi.com/v2/beers/random";
 const randomBtn = document.getElementById('random-btn');
 const randomImage = document.getElementById('random-image');
 const randomHeaderElement = document.getElementById('random-header');
-const randomInfo = document.getElementById('random-info');
+const articleTag = document.getElementById('random-article');
 let randomBeerId;
 
 randomBtn.addEventListener('click', () => {
     getData(randomBeerUrl, createBeerCard);
-});
-
-randomInfo.addEventListener('click', () => {
-    openBeerInfo();
 });
 
 function getData(url, callback) {
@@ -29,13 +25,19 @@ function getData(url, callback) {
 function createBeerCard(data) {
     
     let randomBeer = data[0];
-    console.log(randomBeer);
-    console.log(data);
     randomBeerId = randomBeer.id;
 
     randomImage.src = randomBeer.image_url;
     randomImage.alt = "Bild på en öl.";
     randomHeaderElement.innerText = randomBeer.name;
+    const openInfoBtn = document.createElement("button");
+    openInfoBtn.addEventListener('click', () => {
+        openBeerInfo();
+    });
+    
+    openInfoBtn.innerText = "Visa mer";
+    articleTag.removeChild(articleTag.lastChild);
+    articleTag.appendChild(openInfoBtn);
 }
 
 function openBeerInfo() {
