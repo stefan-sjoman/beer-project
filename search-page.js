@@ -1,5 +1,6 @@
 const searchUrl = 'https://api.punkapi.com/v2/beers';
 const formElement = document.querySelector('form');
+formElement.addEventListener('submit', search);
 const forwardButton = document.createElement('button');
 const backButton = document.createElement('button');
 const pageDisplay = document.createElement('span');
@@ -13,91 +14,11 @@ let searchStrHops = "";
 let searchStrMalt = "";
 let searchStrBrewedBefore = "";
 let searchStrBrewedAfter = "";
-let searchStrAbvGreater = "";
-let searchStrAbvLess = "";
+let searchStrAbvMin = 0;
+let searchStrAbvMax = 100;
 
-
-function validate() {
-
-    if (
-        compareDates(searchStrBrewedAfter, searchStrBrewedBefore) &&
-        checkIfNumber(searchStrAbvLess) &&
-        checkIfNumber(searchStrAbvGreater) &&
-        
-        compareAbv(searchStrAbvGreater, searchStrAbvLess)
-
-    ) {
-        console.log("jippie")
-        return true;
-    } else {
-        console.log("nääjj");
-        return false;
-    }
-}
-
-function checkIfNumber(value) {
-    if (value.length === 0) {
-        return true
-    } else if (isNaN(value) || value < 0) {
-        alert("Skriv in ett positivt tal för bryggnings-datum och alkohol");
-        return false
-    } else {
-        return true;
-    }
-}
-
-
-function compareAbv(value1, value2) {
-    if (value1 > 100 || value2 > 100) {
-        alert("Alkoholprocenten kan inte vara över 100")
-        return false
-    } else if (value1.length === 0 || value2.length === 0) {
-        return true
-    } else if (value1 <= value2) {
-        return true
-    } else {
-        alert("Du har skrivit in värdena i fel ordning"); //Det här behöver fixas så att jag kan hämta label eller nåt och säga vilket fält som ska vara lägre
-        return false
-    };
-}
-
-function compareDates(value1, value2) {
-    if (value1.length === 0 || value2.length === 0) {
-        return true
-    } else if (!value1.includes("-") || !value2.includes("-")) {
-        alert("ingebindestreck")
-        return false
-    } else {
-        let dateArray = (value1.split('-'))
-        let month1 = dateArray[0];
-        console.log(month1)
-        let year1 = dateArray[1];
-        dateArray = (value2.split('-'))
-        let month2 = dateArray[0];
-        let year2 = dateArray[1];
-        console.log(year2)
-
-        if (month1 > 12 || month2 > 12) {//kolla även om mån och år är nr
-            alert("fel i månad");
-            return false
-        } else if (year1 < 1000 || year1 > 9999 || year2 < 1000 || year2 > 9999) {
-            alert("fel i år");
-            return false
-        } else if (year1 > year2) {
-            alert("fel ordning på år");
-            return false
-        } else if (year1 === year2) {
-            if (month1 > month2) alert("fel ordning på månad")
-        }
-    }
-    return true
-
-}
-
-formElement.addEventListener('submit', search);
 
 function search(evt) {
-
     pageNumber = 1;
 
     cachePages = [];
@@ -105,10 +26,17 @@ function search(evt) {
     searchStr = evt.target[0].value;
     searchStrHops = evt.target[1].value;
     searchStrMalt = evt.target[2].value;
-    searchStrBrewedBefore = evt.target[3].value;
-    searchStrBrewedAfter = evt.target[4].value
-    searchStrAbvGreater = evt.target[5].value;
-    searchStrAbvLess = evt.target[6].value;
+    searchStrBrewedAfter = evt.target[3].value;
+    searchStrBrewedBefore = evt.target[4].value;
+    
+    searchStrAbvMin = evt.target[5].value;
+    if (searchStrAbvMin.length !== 0) {
+        searchStrAbvMin = parseFloat(searchStrAbvMin);
+    }
+    searchStrAbvMax = evt.target[6].value;
+    if (searchStrAbvMax.length !== 0) {
+        searchStrAbvMax = parseFloat(searchStrAbvMax);
+    }
 
     if (validate()) {
         changePage();
@@ -117,8 +45,65 @@ function search(evt) {
     evt.preventDefault();
 }
 
-function changePage() {
+function validate() {
+    if (compareDates(searchStrBrewedAfter, searchStrBrewedBefore) &&
+        checkIfNumber(searchStrAbvMax) &&
+        checkIfNumber(searchStrAbvMin) &&       
+        compareAbv(searchStrAbvMin, searchStrAbvMax)) {
+        return true;
+    }
+    return false;
+}
 
+function checkIfNumber(value) {
+    if (value.length === 0) {
+        return true;
+    } else if (isNaN(value) || value < 0) {
+        alert("Skriv in ett positivt tal för alkoholhalterna.");
+        return false
+    }
+    return true;
+}
+
+function compareAbv(min, max) {
+    if (min > 100 || max > 100) {
+        alert("Alkoholprocenten kan inte vara över 100.");
+        return false;
+    } else if (min.length === 0 || max.length === 0) {
+        return true;
+    } else if (min <= max) {
+        return true;
+    }
+    alert("Kontrollera ordningen på alkoholhalterna.");
+    return false;
+}
+
+function compareDates(after, before) {
+    if (after.length === 0 || before.length === 0) {
+        return true
+    } else if (!after.includes("-") || !before.includes("-")) {
+        alert("Kontrollera datumformat.");
+        return false
+    } else {
+        let dateArray = (after.split('-'))
+        let monthAfter = dateArray[0] - 1;
+        let yearAfter = dateArray[1];
+        dateArray = (before.split('-'))
+        let monthBefore = dateArray[0] - 1;
+        let yearBefore = dateArray[1];
+
+        let dateAfter = new Date(yearAfter, monthAfter);
+        let dateBefore = new Date(yearBefore, monthBefore);
+
+        if (dateAfter > dateBefore) {
+            alert("Kontrollera ordningen på datumen.");
+            return false;
+        }
+    }
+    return true;
+}
+
+function changePage() {
     let beerNameSearch = "";
     if (searchStr !== "") {
         beerNameSearch = `&beer_name=${searchStr}`;
@@ -139,22 +124,21 @@ function changePage() {
     if (searchStrBrewedAfter !== "") {
         brewedAfter = `&brewed_after=${searchStrBrewedAfter}`;
     }
-    let abvGreater = "";
-    if (searchStrAbvGreater !== "") {
-        abvGreater = `&abv_gt=${searchStrAbvGreater}`;
+    let abvMin = "";
+    if (searchStrAbvMin !== "") {
+        abvMin = `&abv_gt=${searchStrAbvMin}`;
     }
-    let abvLess = "";
-    if (searchStrAbvLess !== "") {
-        abvLess = `&abv_lt=${searchStrAbvLess}`;
+    let abvMax = "";
+    if (searchStrAbvMax !== "") {
+        abvMax = `&abv_lt=${searchStrAbvMax}`;
     }
 
-    const url = `${searchUrl}?&page=${pageNumber}&per_page=10${beerNameSearch}${hopsSearch}${maltSearch}${brewedBefore}${brewedAfter}${abvGreater}${abvLess}`;
-    console.log(url);
+    const url = `${searchUrl}?&page=${pageNumber}&per_page=10${beerNameSearch}${hopsSearch}${maltSearch}${brewedBefore}${brewedAfter}${abvMin}${abvMax}`;
+
     getData(url, checkData);
 }
 
 function checkData(data) {
-
     if (data.length === 0) {
         pageExists = false;
     } else {
@@ -164,25 +148,26 @@ function checkData(data) {
 
 function getData(url, callback) {
     fetch(url)
-        .then(res => res.json())
-        .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-            console.log(data);
+        callback(data);
 
-            callback(data);
-
-            if (pageExists === true) {
-                render(data);
-            } else {
-                alert("Finns ingen data");
-                pageNumber--; // To cancel-out counting in goForward();
-            }
-        })
-        .catch(error => console.log(error));
+        if (pageExists === true) {
+            render(data);
+        } else {
+            pageNumber--; // To cancel-out counting in goForward();
+        }
+    })
+    .catch(error => {
+        console.log(error);
+        const ulTag = document.querySelector('ul');
+        ulTag.innerText = `Något gick fel:
+        ${error}`;
+    });
 }
 
 function render(data) {
-
     const ulTag = document.querySelector('ul');
 
     ulTag.innerText = "";
@@ -198,15 +183,7 @@ function render(data) {
     cachePages.push(data);
 }
 
-function openBeerInfo(evt) {
-
-    const beerId = evt.target.getAttribute('name');
-    const url = `beer-info.html?name=${beerId}`;
-    document.location.href = url;
-}
-
 function createNavButtons() {
-
     forwardButton.textContent = '►';
     forwardButton.addEventListener('click', goForward);
     backButton.textContent = '◄';
@@ -220,15 +197,19 @@ function createNavButtons() {
 }
 
 function goForward() {
-
     pageNumber++;
     changePage();
 }
 
 function goBack() {
-
     if (pageNumber > 1) {
         pageNumber--;
         render(cachePages[pageNumber - 1]);
     }
+}
+
+function openBeerInfo(evt) {
+    const beerId = evt.target.getAttribute('name');
+    const url = `beer-info.html?name=${beerId}`;
+    document.location.href = url;
 }
