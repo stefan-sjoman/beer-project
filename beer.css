@@ -1,0 +1,67 @@
+body {
+    background-color: palegoldenrod;
+}
+
+#main-index {
+    background-color: forestgreen;
+}
+
+#main-landing {
+    background-color: gainsboro;    
+}
+
+#main-search {
+    background-color:rebeccapurple;
+}
+
+#main-beer-info {
+    background-color: orchid;
+}
+
+h1 {
+    background-color: brown;
+}
+
+h2 {
+    background-color: yellow;
+}
+
+img {
+    max-height: 200px;
+}
+
+button, .default-button {
+    background-color: lightblue;
+}
+
+a {
+    background-color: cadetblue;
+}
+
+ul {
+    background-color: dimgray;
+}
+
+li > ul {
+    background-color:lightcoral;
+}
+
+li {
+    background-color: blanchedalmond;
+}
+
+form {
+    background-color: coral;
+}
+
+form > label {
+    background-color: cyan;
+}
+
+form > input {
+    background-color: gray;
+}
+
+nav {
+    background-color: darkgoldenrod;
+}

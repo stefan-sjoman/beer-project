@@ -4,7 +4,7 @@ const randomBeerUrl = "https://api.punkapi.com/v2/beers/random";
 const randomBtn = document.getElementById('random-btn');
 const randomImage = document.getElementById('random-image');
 const randomHeaderElement = document.getElementById('random-header');
-const articleTag = document.getElementById('random-article');
+const mainTag = document.getElementById('main-landing');
 let randomBeerId;
 
 randomBtn.addEventListener('click', () => {
@@ -36,8 +36,8 @@ function createBeerCard(data) {
     });
     
     openInfoBtn.innerText = "Visa mer";
-    articleTag.removeChild(articleTag.lastChild);
-    articleTag.appendChild(openInfoBtn);
+    mainTag.removeChild(mainTag.lastChild);
+    mainTag.appendChild(openInfoBtn);
 }
 
 function openBeerInfo() {
