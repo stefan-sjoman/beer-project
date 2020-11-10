@@ -5,8 +5,8 @@ const forwardButton = document.createElement('button');
 const backButton = document.createElement('button');
 const pageDisplay = document.createElement('span');
 const navElement = document.querySelector('nav');
+const ulTag = document.querySelector('ul');
 let pageNumber = 1;
-let pageExists;
 let cachePages = [];
 
 let searchStr = "";
@@ -16,7 +16,6 @@ let searchStrBrewedBefore = "";
 let searchStrBrewedAfter = "";
 let searchStrAbvMin = 0;
 let searchStrAbvMax = 100;
-
 
 function search(evt) {
     pageNumber = 1;
@@ -28,7 +27,7 @@ function search(evt) {
     searchStrMalt = evt.target[2].value;
     searchStrBrewedAfter = evt.target[3].value;
     searchStrBrewedBefore = evt.target[4].value;
-    
+
     searchStrAbvMin = evt.target[5].value;
     if (searchStrAbvMin.length !== 0) {
         searchStrAbvMin = parseFloat(searchStrAbvMin);
@@ -39,16 +38,41 @@ function search(evt) {
     }
 
     if (validate()) {
-        changePage();
+        getData(generateUrl(), showFirstPage);
     }
+    //ändrat så att getData körs här istället för i generateUrl (före detta changePages)
+
+    pageNumber++; //går fram för att kunna hämta data för nästa sida
+    getData(generateUrl(), cacheNextPage); //hämtar nästa sida, cachar den om den finns, gömmer annars framåtknappen
+    pageNumber-- //byter tillbaka till rätt sidnummer
 
     evt.preventDefault();
+}
+
+function render(data) {
+    
+    ulTag.innerText = "";
+    ulTag.addEventListener('click', openBeerInfo);
+
+    data.forEach((item) => {
+        const liTag = document.createElement('li');
+        liTag.textContent = item.name;
+        liTag.setAttribute('name', item.id);
+        ulTag.appendChild(liTag);
+    });
+    createNavButtons();
+
+    if (pageNumber === 1) {
+        backButton.classList.add('inactive'); //lagt till för att gömma bakåtknappen på sida 1
+    }
+
+    // cachePages.push(data); flyttat till den nya funktionen cacheNextPage
 }
 
 function validate() {
     if (compareDates(searchStrBrewedAfter, searchStrBrewedBefore) &&
         checkIfNumber(searchStrAbvMax) &&
-        checkIfNumber(searchStrAbvMin) &&       
+        checkIfNumber(searchStrAbvMin) &&
         compareAbv(searchStrAbvMin, searchStrAbvMax)) {
         return true;
     }
@@ -79,7 +103,7 @@ function compareAbv(min, max) {
 }
 
 function compareDates(after, before) {
-    if (after.length === 0 || before.length === 0) {
+    if (after.length === 0 && before.length === 0) {//ändrat, det ska vara and innan stod det or
         return true
     } else if (!after.includes("-") || !before.includes("-")) {
         alert("Kontrollera datumformat.");
@@ -103,7 +127,7 @@ function compareDates(after, before) {
     return true;
 }
 
-function changePage() {
+function generateUrl() {
     let beerNameSearch = "";
     if (searchStr !== "") {
         beerNameSearch = `&beer_name=${searchStr}`;
@@ -134,53 +158,45 @@ function changePage() {
     }
 
     const url = `${searchUrl}?&page=${pageNumber}&per_page=10${beerNameSearch}${hopsSearch}${maltSearch}${brewedBefore}${brewedAfter}${abvMin}${abvMax}`;
-
-    getData(url, checkData);
-}
-
-function checkData(data) {
-    if (data.length === 0) {
-        pageExists = false;
-    } else {
-        pageExists = true;
-    }
+    return url; //lagt till denna rad
+    // getData(url, checkData); Den här har jag brutit ut så den körs i search istället
 }
 
 function getData(url, callback) {
     fetch(url)
-    .then(res => res.json())
-    .then(data => {
-
-        callback(data);
-
-        if (pageExists === true) {
-            render(data);
-        } else {
-            pageNumber--; // To cancel-out counting in goForward();
-        }
-    })
-    .catch(error => {
-        console.log(error);
-        const ulTag = document.querySelector('ul');
-        ulTag.innerText = `Något gick fel:
+        .then(res => res.json())
+        .then(data => {
+            callback(data);
+        })
+        .catch(error => {
+            console.log(error);
+            ulTag.innerText = `Något gick fel:
         ${error}`;
-    });
+        });
 }
 
-function render(data) {
-    const ulTag = document.querySelector('ul');
+//brutit ut denna ur getData funktionen, stoppar in som callback istället
+function showFirstPage(data) {
+    if (data.length !== 0) {
+        render(data);
+        cachePages.push(data);
+    } else {
+        backButton.classList.add('inactive');
+        ulTag.innerText = "";
+        // HÄR SKAPA INGET SÖKRESULTAT TEXT!
+        navElement.innerText="";
+        pageNumber--; // To cancel-out counting in goForward();
+    }
+}
 
-    ulTag.innerText = "";
-    ulTag.addEventListener('click', openBeerInfo);
-
-    data.forEach((item) => {
-        const liTag = document.createElement('li');
-        liTag.textContent = item.name;
-        liTag.setAttribute('name', item.id);
-        ulTag.appendChild(liTag);
-    });
-    createNavButtons();
-    cachePages.push(data);
+//ny funktion som cachar nästa sida om det finns en, gömmer framåtknappen om den inte finns
+function cacheNextPage(data) {
+    if (data.length !== 0) {
+        cachePages.push(data);
+        forwardButton.classList.remove('inactive');
+    } else {
+        forwardButton.classList.add('inactive');
+    }
 }
 
 function createNavButtons() {
@@ -197,11 +213,18 @@ function createNavButtons() {
 }
 
 function goForward() {
+
     pageNumber++;
-    changePage();
+    backButton.classList.remove('inactive');
+    render(cachePages[pageNumber - 1]) //-1 pga att sida 1 i arrayn har index 0.
+
+    pageNumber++; //bläddra fram för att kunna hämta data för nästa sida
+    getData(generateUrl(), cacheNextPage); //hämtar sidan, cachar den om den finns, gömmer annars framåtknappen
+    pageNumber-- //byter tillbaka till rätt sidnummer
 }
 
 function goBack() {
+    forwardButton.classList.remove('inactive');
     if (pageNumber > 1) {
         pageNumber--;
         render(cachePages[pageNumber - 1]);
