@@ -16,30 +16,6 @@ let searchStrBrewedAfter = "";
 let searchStrAbvMin = 0;
 let searchStrAbvMax = 100;
 
-function render(data) {//spännande upptäckt - behöver ha render här uppe annars måste search köras färdigt innan den kan använda den
-    const ulTag = document.querySelector('ul');
-
-    ulTag.innerText = "";
-    ulTag.addEventListener('click', openBeerInfo);
-
-    data.forEach((item) => {
-        const liTag = document.createElement('li');
-        liTag.textContent = item.name;
-        liTag.setAttribute('name', item.id);
-        ulTag.appendChild(liTag);
-    });
-    createNavButtons();
-
-    if (pageNumber === 1) 
-    {
-        backButton.classList.add('inactive');//lagt till för att gömma bakåtknappen på sida 1
-    }
-
-    // cachePages.push(data); flyttat till den nya funktionen cacheNextPage
-}
-
-
-
 function search(evt) {
     pageNumber = 1;
 
@@ -70,6 +46,27 @@ function search(evt) {
     pageNumber-- //byter tillbaka till rätt sidnummer
 
     evt.preventDefault();
+}
+
+function render(data) { //spännande upptäckt - behöver ha render här uppe annars måste search köras färdigt innan den kan använda den
+    const ulTag = document.querySelector('ul');
+
+    ulTag.innerText = "";
+    ulTag.addEventListener('click', openBeerInfo);
+
+    data.forEach((item) => {
+        const liTag = document.createElement('li');
+        liTag.textContent = item.name;
+        liTag.setAttribute('name', item.id);
+        ulTag.appendChild(liTag);
+    });
+    createNavButtons();
+
+    if (pageNumber === 1) {
+        backButton.classList.add('inactive'); //lagt till för att gömma bakåtknappen på sida 1
+    }
+
+    // cachePages.push(data); flyttat till den nya funktionen cacheNextPage
 }
 
 function validate() {
@@ -193,19 +190,19 @@ function showFirstPage(data) {
     if (data.length !== 0) {
         render(data);
         cachePages.push(data);
+    } else {
+        backButton.classList.add('inactive');
+        pageNumber--; // To cancel-out counting in goForward();
     }
-    else
-    {backButton.classList.add('inactive');
-    pageNumber--;} // To cancel-out counting in goForward();
 }
 
 //ny funktion som cachar nästa sida om det finns en, gömmer framåtknappen om den inte finns
 function cacheNextPage(data) {
     if (data.length !== 0) {
         cachePages.push(data);
+        forwardButton.classList.remove('inactive');
     } else {
         forwardButton.classList.add('inactive');
-        pageNumber--;
     }
 }
 
