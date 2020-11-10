@@ -5,6 +5,7 @@ const forwardButton = document.createElement('button');
 const backButton = document.createElement('button');
 const pageDisplay = document.createElement('span');
 const navElement = document.querySelector('nav');
+const ulTag = document.querySelector('ul');
 let pageNumber = 1;
 let cachePages = [];
 
@@ -48,9 +49,8 @@ function search(evt) {
     evt.preventDefault();
 }
 
-function render(data) { //spännande upptäckt - behöver ha render här uppe annars måste search köras färdigt innan den kan använda den
-    const ulTag = document.querySelector('ul');
-
+function render(data) {
+    
     ulTag.innerText = "";
     ulTag.addEventListener('click', openBeerInfo);
 
@@ -103,9 +103,9 @@ function compareAbv(min, max) {
 }
 
 function compareDates(after, before) {
-    if (after.length === 0 || before.length === 0) {
+    if (after.length === 0 && before.length === 0) {//ändrat, det ska vara and innan stod det or
         return true
-    } else if (!after.includes("-") || !before.includes("-")) {
+    } else if (!after.includes("-") && !before.includes("-")) {
         alert("Kontrollera datumformat.");
         return false
     } else {
@@ -179,7 +179,6 @@ function getData(url, callback) {
         })
         .catch(error => {
             console.log(error);
-            const ulTag = document.querySelector('ul');
             ulTag.innerText = `Något gick fel:
         ${error}`;
         });
@@ -192,6 +191,8 @@ function showFirstPage(data) {
         cachePages.push(data);
     } else {
         backButton.classList.add('inactive');
+        ulTag.innerText = "";
+        navElement.innerText="";
         pageNumber--; // To cancel-out counting in goForward();
     }
 }
