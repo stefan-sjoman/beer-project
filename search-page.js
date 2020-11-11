@@ -107,8 +107,7 @@ function compareDates(after, before) {
     } else if (before.length !== 0 && !before.includes("-")) {
         alert("Kontrollera datumformat.");
         return false
-    }
- else {
+    } else {
     let dateArray = (after.split('-'))
     let monthAfter = dateArray[0] - 1;
     let yearAfter = dateArray[1];
