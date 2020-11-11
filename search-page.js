@@ -101,26 +101,30 @@ function compareAbv(min, max) {
 function compareDates(after, before) {
     if (after.length === 0 && before.length === 0) {
         return true
-    } else if (!after.includes("-") || !before.includes("-")) {
+    } else if (after.length !== 0 && !after.includes("-")) {
         alert("Kontrollera datumformat.");
         return false
-    } else {
-        let dateArray = (after.split('-'))
-        let monthAfter = dateArray[0] - 1;
-        let yearAfter = dateArray[1];
-        dateArray = (before.split('-'))
-        let monthBefore = dateArray[0] - 1;
-        let yearBefore = dateArray[1];
-
-        let dateAfter = new Date(yearAfter, monthAfter);
-        let dateBefore = new Date(yearBefore, monthBefore);
-
-        if (dateAfter > dateBefore) {
-            alert("Kontrollera ordningen på datumen.");
-            return false;
-        }
+    } else if (before.length !== 0 && !before.includes("-")) {
+        alert("Kontrollera datumformat.");
+        return false
     }
-    return true;
+ else {
+    let dateArray = (after.split('-'))
+    let monthAfter = dateArray[0] - 1;
+    let yearAfter = dateArray[1];
+    dateArray = (before.split('-'))
+    let monthBefore = dateArray[0] - 1;
+    let yearBefore = dateArray[1];
+
+    let dateAfter = new Date(yearAfter, monthAfter);
+    let dateBefore = new Date(yearBefore, monthBefore);
+
+    if (dateAfter > dateBefore) {
+        alert("Kontrollera ordningen på datumen.");
+        return false;
+    }
+}
+return true;
 }
 
 function generateUrl() {
