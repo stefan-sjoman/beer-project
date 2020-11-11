@@ -40,17 +40,15 @@ function search(evt) {
     if (validate()) {
         getData(generateUrl(), showFirstPage);
     }
-    //ändrat så att getData körs här istället för i generateUrl (före detta changePages)
 
-    pageNumber++; //går fram för att kunna hämta data för nästa sida
-    getData(generateUrl(), cacheNextPage); //hämtar nästa sida, cachar den om den finns, gömmer annars framåtknappen
-    pageNumber-- //byter tillbaka till rätt sidnummer
-
+    pageNumber++;
+    getData(generateUrl(), cacheNextPage);
+    pageNumber--;
     evt.preventDefault();
 }
 
 function render(data) {
-    
+
     ulTag.innerText = "";
     ulTag.addEventListener('click', openBeerInfo);
 
@@ -63,10 +61,8 @@ function render(data) {
     createNavButtons();
 
     if (pageNumber === 1) {
-        backButton.classList.add('inactive'); //lagt till för att gömma bakåtknappen på sida 1
+        backButton.classList.add('inactive');
     }
-
-    // cachePages.push(data); flyttat till den nya funktionen cacheNextPage
 }
 
 function validate() {
@@ -103,7 +99,7 @@ function compareAbv(min, max) {
 }
 
 function compareDates(after, before) {
-    if (after.length === 0 && before.length === 0) {//ändrat, det ska vara and innan stod det or
+    if (after.length === 0 && before.length === 0) {
         return true
     } else if (!after.includes("-") || !before.includes("-")) {
         alert("Kontrollera datumformat.");
@@ -158,8 +154,7 @@ function generateUrl() {
     }
 
     const url = `${searchUrl}?&page=${pageNumber}&per_page=10${beerNameSearch}${hopsSearch}${maltSearch}${brewedBefore}${brewedAfter}${abvMin}${abvMax}`;
-    return url; //lagt till denna rad
-    // getData(url, checkData); Den här har jag brutit ut så den körs i search istället
+    return url;
 }
 
 function getData(url, callback) {
@@ -175,7 +170,6 @@ function getData(url, callback) {
         });
 }
 
-//brutit ut denna ur getData funktionen, stoppar in som callback istället
 function showFirstPage(data) {
     if (data.length !== 0) {
         render(data);
@@ -183,13 +177,14 @@ function showFirstPage(data) {
     } else {
         backButton.classList.add('inactive');
         ulTag.innerText = "";
-        // HÄR SKAPA INGET SÖKRESULTAT TEXT!
-        navElement.innerText="";
-        pageNumber--; // To cancel-out counting in goForward();
+        const liTag = document.createElement('li');
+        liTag.innerText = "Inga sökresultat";
+        ulTag.appendChild(liTag);
+        navElement.innerText = "";
+        pageNumber--;
     }
 }
 
-//ny funktion som cachar nästa sida om det finns en, gömmer framåtknappen om den inte finns
 function cacheNextPage(data) {
     if (data.length !== 0) {
         cachePages.push(data);
@@ -217,15 +212,15 @@ function goForward() {
     if (cachePages.length > pageNumber) {
         pageNumber++;
         backButton.classList.remove('inactive');
-        render(cachePages[pageNumber - 1]) //-1 pga att sida 1 i arrayn har index 0.
-        pageNumber++; //bläddra fram för att kunna hämta data för nästa sida
-        getData(generateUrl(), cacheNextPage); //hämtar sidan, cachar den om den finns, gömmer annars framåtknappen
-        pageNumber--;//byter tillbaka till rätt sidnummer
-    } 
+        render(cachePages[pageNumber - 1])
+        pageNumber++;
+        getData(generateUrl(), cacheNextPage);
+        pageNumber--;
+    }
 }
 
 function goBack() {
-    
+
     if (pageNumber > 1) {
         pageNumber--;
         render(cachePages[pageNumber - 1]);
@@ -234,7 +229,10 @@ function goBack() {
 }
 
 function openBeerInfo(evt) {
+
     const beerId = evt.target.getAttribute('name');
-    const url = `beer-info.html?name=${beerId}`;
-    window.open(url);
+    if (beerId !== null) {
+        const url = `beer-info.html?name=${beerId}`;
+        window.open(url);
+    }
 }

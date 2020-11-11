@@ -1,5 +1,3 @@
-/* Random Öl */
-
 const randomBeerUrl = "https://api.punkapi.com/v2/beers/random";
 const randomBtn = document.getElementById('random-btn');
 const randomImage = document.getElementById('random-image');
