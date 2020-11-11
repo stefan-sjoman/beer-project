@@ -214,20 +214,22 @@ function createNavButtons() {
 
 function goForward() {
 
-    pageNumber++;
-    backButton.classList.remove('inactive');
-    render(cachePages[pageNumber - 1]) //-1 pga att sida 1 i arrayn har index 0.
-
-    pageNumber++; //bläddra fram för att kunna hämta data för nästa sida
-    getData(generateUrl(), cacheNextPage); //hämtar sidan, cachar den om den finns, gömmer annars framåtknappen
-    pageNumber-- //byter tillbaka till rätt sidnummer
+    if (cachePages.length > pageNumber) {
+        pageNumber++;
+        backButton.classList.remove('inactive');
+        render(cachePages[pageNumber - 1]) //-1 pga att sida 1 i arrayn har index 0.
+        pageNumber++; //bläddra fram för att kunna hämta data för nästa sida
+        getData(generateUrl(), cacheNextPage); //hämtar sidan, cachar den om den finns, gömmer annars framåtknappen
+        pageNumber--;//byter tillbaka till rätt sidnummer
+    } 
 }
 
 function goBack() {
-    forwardButton.classList.remove('inactive');
+    
     if (pageNumber > 1) {
         pageNumber--;
         render(cachePages[pageNumber - 1]);
+        forwardButton.classList.remove('inactive');
     }
 }
 
